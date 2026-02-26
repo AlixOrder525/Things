@@ -58,14 +58,13 @@ h1 {
   <button onclick="goForward()">➡</button>
   <button onclick="reloadPage()">⟳</button>
 
-  <input id="url" placeholder="Enter website or search">
-  
+  <input id="url" placeholder="Search or enter website">
   <button onclick="openSite()">Go</button>
 </div>
 
 <div class="main">
-  <h1>Discord Mini Browser</h1>
-  <p>Search or enter a website above</p>
+  <h1>DuckDuckGo Mini Browser</h1>
+  <p>All searches are privacy-friendly and Google-free</p>
 </div>
 
 <script>
@@ -73,9 +72,14 @@ let historyStack = [];
 let currentIndex = -1;
 
 function formatURL(text) {
-  text = text.trim();
+  text = text.trim().toLowerCase();
 
-  // Full URL typed
+  // 🚫 Block ALL google domains
+  if (text.includes("google.")) {
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(text);
+  }
+
+  // If full URL typed
   if (text.startsWith("http://") || text.startsWith("https://")) {
     return text;
   }
@@ -85,8 +89,18 @@ function formatURL(text) {
     return "https://" + text;
   }
 
-  // Otherwise treat as search (uses DuckDuckGo to avoid Google block)
+  // Default: DuckDuckGo search
   return "https://duckduckgo.com/?q=" + encodeURIComponent(text);
+}
+
+function openLink(url) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 function openSite() {
@@ -99,46 +113,27 @@ function openSite() {
   historyStack.push(url);
   currentIndex++;
 
-  // ✅ PRO FIX — opens like a real user click
-  const link = document.createElement("a");
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+  openLink(url);
 }
 
 function goBack() {
   if (currentIndex > 0) {
     currentIndex--;
-    openFromHistory();
+    openLink(historyStack[currentIndex]);
   }
 }
 
 function goForward() {
   if (currentIndex < historyStack.length - 1) {
     currentIndex++;
-    openFromHistory();
+    openLink(historyStack[currentIndex]);
   }
 }
 
 function reloadPage() {
   if (currentIndex >= 0) {
-    openFromHistory();
+    openLink(historyStack[currentIndex]);
   }
-}
-
-function openFromHistory() {
-  const url = historyStack[currentIndex];
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
 }
 </script>
 
