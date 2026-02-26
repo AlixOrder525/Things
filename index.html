@@ -58,14 +58,14 @@ h1 {
   <button onclick="goForward()">➡</button>
   <button onclick="reloadPage()">⟳</button>
 
-  <input id="url" placeholder="Enter website or search Google">
+  <input id="url" placeholder="Enter website or search">
   
   <button onclick="openSite()">Go</button>
 </div>
 
 <div class="main">
   <h1>Discord Mini Browser</h1>
-  <p>Type a website or search term above</p>
+  <p>Search or enter a website above</p>
 </div>
 
 <script>
@@ -73,17 +73,24 @@ let historyStack = [];
 let currentIndex = -1;
 
 function formatURL(text) {
-  if (text.includes(".") && !text.includes(" ")) {
-    if (!text.startsWith("http")) {
-      return "https://" + text;
-    }
+  text = text.trim();
+
+  // If user typed a full URL
+  if (text.startsWith("http://") || text.startsWith("https://")) {
     return text;
   }
-  return "https://duckduckgo/?q=" + encodeURIComponent(text);
+
+  // If user typed something that looks like a website
+  if (text.includes(".") && !text.includes(" ")) {
+    return "https://" + text;
+  }
+
+  // Otherwise treat as search → use DuckDuckGo (avoids Google block)
+  return "https://duckduckgo.com/?q=" + encodeURIComponent(text);
 }
 
 function openSite() {
-  const input = document.getElementById("url").value.trim();
+  const input = document.getElementById("url").value;
   if (!input) return;
 
   const url = formatURL(input);
