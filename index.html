@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Browser</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #2b2d31;
+      color: white;
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    input {
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #5865F2;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Discord Mini Browser</h1>
+
+<input id="url" placeholder="Enter website (example: google.com)">
+<button onclick="openSite()">Go</button>
+
+<script>
+function openSite() {
+  let url = document.getElementById("url").value.trim();
+
+  if (!url.startsWith("http")) {
+    url = "https://" + url;
+  }
+
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
