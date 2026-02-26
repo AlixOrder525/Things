@@ -1,52 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mini Browser</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #2b2d31;
-      color: white;
-      text-align: center;
-      margin-top: 100px;
-    }
+<meta charset="UTF-8">
+<title>Discord Mini Browser</title>
 
-    input {
-      width: 60%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #1e1f22;
+  color: white;
+}
 
-    button {
-      padding: 12px 20px;
-      font-size: 16px;
-      margin-left: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #5865F2;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+.toolbar {
+  display: flex;
+  padding: 10px;
+  background: #2b2d31;
+  gap: 8px;
+  align-items: center;
+}
+
+button {
+  background: #5865F2;
+  border: none;
+  padding: 8px 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #4752c4;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+.main {
+  text-align: center;
+  margin-top: 120px;
+}
+
+h1 {
+  color: #5865F2;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Discord Mini Browser</h1>
+<div class="toolbar">
+  <button onclick="goBack()">⬅</button>
+  <button onclick="goForward()">➡</button>
+  <button onclick="reloadPage()">⟳</button>
 
-<input id="url" placeholder="Enter website (example: google.com)">
-<button onclick="openSite()">Go</button>
+  <input id="url" placeholder="Enter website or search Google">
+  
+  <button onclick="openSite()">Go</button>
+</div>
+
+<div class="main">
+  <h1>Discord Mini Browser</h1>
+  <p>Type a website or search term above</p>
+</div>
 
 <script>
-function openSite() {
-  let url = document.getElementById("url").value.trim();
+let historyStack = [];
+let currentIndex = -1;
 
-  if (!url.startsWith("http")) {
-    url = "https://" + url;
+function formatURL(text) {
+  if (text.includes(".") && !text.includes(" ")) {
+    if (!text.startsWith("http")) {
+      return "https://" + text;
+    }
+    return text;
   }
+  return "https://www.google.com/search?q=" + encodeURIComponent(text);
+}
+
+function openSite() {
+  const input = document.getElementById("url").value.trim();
+  if (!input) return;
+
+  const url = formatURL(input);
+
+  historyStack = historyStack.slice(0, currentIndex + 1);
+  historyStack.push(url);
+  currentIndex++;
 
   window.open(url, "_blank");
+}
+
+function goBack() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    window.open(historyStack[currentIndex], "_blank");
+  }
+}
+
+function goForward() {
+  if (currentIndex < historyStack.length - 1) {
+    currentIndex++;
+    window.open(historyStack[currentIndex], "_blank");
+  }
+}
+
+function reloadPage() {
+  if (currentIndex >= 0) {
+    window.open(historyStack[currentIndex], "_blank");
+  }
 }
 </script>
 
