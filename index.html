@@ -75,17 +75,17 @@ let currentIndex = -1;
 function formatURL(text) {
   text = text.trim();
 
-  // If user typed a full URL
+  // Full URL typed
   if (text.startsWith("http://") || text.startsWith("https://")) {
     return text;
   }
 
-  // If user typed something that looks like a website
+  // Looks like a website
   if (text.includes(".") && !text.includes(" ")) {
     return "https://" + text;
   }
 
-  // Otherwise treat as search → use DuckDuckGo (avoids Google block)
+  // Otherwise treat as search (uses DuckDuckGo to avoid Google block)
   return "https://duckduckgo.com/?q=" + encodeURIComponent(text);
 }
 
@@ -99,27 +99,46 @@ function openSite() {
   historyStack.push(url);
   currentIndex++;
 
-  window.open(url, "_blank");
+  // ✅ PRO FIX — opens like a real user click
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 function goBack() {
   if (currentIndex > 0) {
     currentIndex--;
-    window.open(historyStack[currentIndex], "_blank");
+    openFromHistory();
   }
 }
 
 function goForward() {
   if (currentIndex < historyStack.length - 1) {
     currentIndex++;
-    window.open(historyStack[currentIndex], "_blank");
+    openFromHistory();
   }
 }
 
 function reloadPage() {
   if (currentIndex >= 0) {
-    window.open(historyStack[currentIndex], "_blank");
+    openFromHistory();
   }
+}
+
+function openFromHistory() {
+  const url = historyStack[currentIndex];
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 </script>
 
